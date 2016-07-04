@@ -8,7 +8,7 @@ class Db {
            $this->con = new PDO(
                 \sprintf("mysql:host=%s;dbname=%s;charset=utf8", "localhost", "angularnoticiasv1"), 
                 "root", 
-                "",
+                "leinad",
                 array(
                     PDO::ATTR_EMULATE_PREPARES => false,
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
@@ -17,7 +17,7 @@ class Db {
             $this->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
        }
        
-       return $this->con;
+       return $this->con; 
        
    }
 }
