@@ -51,7 +51,7 @@
             
             <!-- form cadastro notícias -->
             <div class="container" ng-show="showCadastro">
-                <form ng-submit="cadastrarNovaNoticia()">
+                <form ng-submit="processaFormNoticia()">
                     
                     <div class="row mbottom">
                         <div class="col-xs-3 text-right">
@@ -112,9 +112,17 @@
                             <button 
                                     class="btn btn-danger"
                                     type="submit"
+                                    ng-show="noticia.idnoticia==-1"                                    
                             >
                                 Cadastrar
                             </button>
+                            <button 
+                                    class="btn btn-success"
+                                    type="submit"
+                                    ng-show="noticia.idnoticia!=-1"
+                            >
+                                Alterar
+                            </button>                            
                         </div>
                     </div>
                     
@@ -153,6 +161,7 @@
                                         <button 
                                                 type="button"
                                                 class="btn btn-default"
+                                                ng-click="getNoticia(noticia.idnoticia)"
                                         >
                                             A
                                         </button>

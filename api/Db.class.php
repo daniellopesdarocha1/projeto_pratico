@@ -17,7 +17,7 @@ class Db {
             $this->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
        }
        
-       return $this->con; 
+       return $this->con;
        
    }
 }

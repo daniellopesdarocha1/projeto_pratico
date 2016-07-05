@@ -18,7 +18,7 @@ $app->post(
         
         $data = json_decode($app->request()->getBody());
         $usuario = (isset($data->usuario)) ? $data->usuario : "";
-        $senha   = (isset($data->senha)) ? $data->senha : "";
+	    $senha   = (isset($data->senha)) ? $data->senha : "";
         
         if($usuario=="admin" && $senha=="123456"){
             
@@ -36,7 +36,7 @@ $app->post('/cadastrarNovaNoticia', 'auth', function () use ($app, $db) {
         
         $data = json_decode($app->request()->getBody());
         $noticiatitulo = (isset($data->noticiatitulo)) ? $data->noticiatitulo : "";
-        $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
+	    $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
         $noticiadata = (isset($data->noticiadata)) ? $data->noticiadata : "";
         $noticiatexto = (isset($data->noticiatexto)) ? $data->noticiatexto : "";
         
@@ -53,6 +53,49 @@ $app->post('/cadastrarNovaNoticia', 'auth', function () use ($app, $db) {
         $consulta->bindParam(':NOTICIADESCRICAO', $noticiadescricao);
         $consulta->bindParam(':NOTICIATEXTO', $noticiatexto);
         $consulta->bindParam(':NOTICIADATA', $data);
+    
+        if($consulta->execute()){
+            echo json_encode(array("erro"=>false));
+        } else {
+            echo json_encode(array("erro"=>true));
+        }
+        
+    }
+);
+
+$app->post('/alterarNoticia/:idnoticia', 'auth', function ($idnoticia) use ($app, $db) {
+        
+        $data = json_decode($app->request()->getBody());
+    
+        $idnoticia = (int)$idnoticia;
+    
+        $noticiatitulo = (isset($data->noticiatitulo)) ? $data->noticiatitulo : "";
+	    $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
+        $noticiadata = (isset($data->noticiadata)) ? $data->noticiadata : "";
+        $noticiatexto = (isset($data->noticiatexto)) ? $data->noticiatexto : "";
+        
+        $data_tmp = explode('/',$noticiadata);
+    
+        if(checkdate($data_tmp[1], $data_tmp[0], $data_tmp[2])){
+            $data = sprintf('%s-%s-%s', $data_tmp[2], $data_tmp[1], $data_tmp[0]);
+        } else {
+            $data = NULL; 
+        }
+        
+        $consulta = $db->con()->prepare('UPDATE noticia 
+                                        SET 
+                                            noticiatitulo = :NOTICIATITULO, 
+                                            noticiadescricao = :NOTICIADESCRICAO, 
+                                            noticiatexto = :NOTICIATEXTO, 
+                                            noticiadata = :NOTICIADATA
+                                        WHERE 
+                                            idnoticia = :IDNOTICIA');
+    
+        $consulta->bindParam(':NOTICIATITULO', $noticiatitulo);
+        $consulta->bindParam(':NOTICIADESCRICAO', $noticiadescricao);
+        $consulta->bindParam(':NOTICIATEXTO', $noticiatexto);
+        $consulta->bindParam(':NOTICIADATA', $data);
+        $consulta->bindParam(':IDNOTICIA', $idnoticia);
     
         if($consulta->execute()){
             echo json_encode(array("erro"=>false));
@@ -80,6 +123,31 @@ $app->get('/listarNoticias', 'auth', function () use ($app, $db) {
         $consulta->execute();
         $noticias = $consulta->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(array("noticias"=>$noticias));
+        
+    }
+);
+
+$app->get('/getnoticia/:idnoticia', 'auth', function ($idnoticia) use ($app, $db) {
+        $idnoticia = (int)$idnoticia;
+    
+        $consulta = $db->con()->prepare("SELECT
+                                            idnoticia,
+                                            noticiatitulo,
+                                            noticiadescricao,
+                                            noticiatexto,
+                                            DATE_FORMAT(noticiadata,'%d/%m/%Y') AS noticiadata
+                                        FROM
+                                            noticia
+                                        WHERE
+                                            idnoticia = :IDNOTICIA                                            
+                                        ORDER BY
+                                            noticiadata DESC,
+                                            noticiatitulo ASC
+                                        ");
+        $consulta->bindParam(':IDNOTICIA', $idnoticia);
+        $consulta->execute();
+        $noticias = $consulta->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode(array("noticia"=>$noticias[0]));
         
     }
 );
