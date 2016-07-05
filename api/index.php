@@ -18,7 +18,7 @@ $app->post(
         
         $data = json_decode($app->request()->getBody());
         $usuario = (isset($data->usuario)) ? $data->usuario : "";
-	    $senha   = (isset($data->senha)) ? $data->senha : "";
+        $senha   = (isset($data->senha)) ? $data->senha : "";
         
         if($usuario=="admin" && $senha=="123456"){
             
@@ -36,7 +36,7 @@ $app->post('/cadastrarNovaNoticia', 'auth', function () use ($app, $db) {
         
         $data = json_decode($app->request()->getBody());
         $noticiatitulo = (isset($data->noticiatitulo)) ? $data->noticiatitulo : "";
-	    $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
+        $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
         $noticiadata = (isset($data->noticiadata)) ? $data->noticiadata : "";
         $noticiatexto = (isset($data->noticiatexto)) ? $data->noticiatexto : "";
         
@@ -59,6 +59,27 @@ $app->post('/cadastrarNovaNoticia', 'auth', function () use ($app, $db) {
         } else {
             echo json_encode(array("erro"=>true));
         }
+        
+    }
+);
+
+$app->get('/listarNoticias', 'auth', function () use ($app, $db) {
+            
+        $consulta = $db->con()->prepare("SELECT
+                                            idnoticia,
+                                            noticiatitulo,
+                                            noticiadescricao,
+                                            noticiatexto,
+                                            DATE_FORMAT(noticiadata,'%d/%m/%Y') AS datanoticia
+                                        FROM
+                                            noticia
+                                        ORDER BY
+                                            noticiadata DESC,
+                                            noticiatitulo ASC
+                                        ");
+        $consulta->execute();
+        $noticias = $consulta->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode(array("noticias"=>$noticias));
         
     }
 );

@@ -18,7 +18,7 @@ app.controller('loginController', function($scope, $http){
                 console.log(data);
             
                 if(data.logado){
-                    window.location = "painel-inicial.php"
+                    window.location = "painel-inicial.php";
                 } else {
                     alert("Verifique usuário ou senha");   
                 }

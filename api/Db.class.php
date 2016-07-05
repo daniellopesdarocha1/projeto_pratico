@@ -7,7 +7,7 @@ class Db {
        if($this->con==null){
            $this->con = new PDO(
                 \sprintf("mysql:host=%s;dbname=%s;charset=utf8", "localhost", "angularnoticiasv1"), 
-                "root", 
+                "daniel", 
                 "leinad",
                 array(
                     PDO::ATTR_EMULATE_PREPARES => false,
