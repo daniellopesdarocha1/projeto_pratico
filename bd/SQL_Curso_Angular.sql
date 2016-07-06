@@ -32,7 +32,7 @@ ENGINE = InnoDB;
 -- Table `angularnoticiasv1`.`imagem`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `angularnoticiasv1`.`imagem` (
-  `idimagem` INT NOT NULL,
+  `idimagem` INT NOT NULL AUTO_INCREMENT,
   `imagemtitulo` VARCHAR(160) NOT NULL,
   `imagemarquivo` VARCHAR(100) NOT NULL,
   `noticia_idnoticia` INT NOT NULL,
