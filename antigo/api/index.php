@@ -122,6 +122,7 @@ $app->get('/listarNoticias', 'auth', function () use ($app, $db) {
                                             noticiatitulo,
                                             noticiadescricao,
                                             noticiatexto,
+                                            noticiastatus,
                                             DATE_FORMAT(noticiadata,'%d/%m/%Y') AS datanoticia
                                         FROM
                                             noticia
@@ -223,7 +224,7 @@ $app->get('/excluirNoticia/:idnoticia', 'auth', function ($idnoticia) use ($app,
 );
 
 
-// gerenciamento de imagens 
+// gerenciamento de imagens
 
 $app->post('/cadastrarImagem/:idnoticia', 'auth', function ($idnoticia) use ($app, $db) {
         

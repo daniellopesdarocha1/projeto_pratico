@@ -72,6 +72,7 @@ app.controller('gerenciarImagensController', function($scope, $http, $location, 
         console.info("Erro ao adicionar elemento", fileItem);
     };
     
+    
 });
 
 app.config(function($locationProvider){
