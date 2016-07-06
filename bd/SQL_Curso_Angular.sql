@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `angularnoticiasv1`.`noticia` (
   `noticiadescricao` VARCHAR(250) NULL,
   `noticiatexto` TEXT NULL,
   `noticiadata` TIMESTAMP NOT NULL DEFAULT now(),
-  `noticiastauts` INT NOT NULL DEFAULT 1 COMMENT '1 = bloqueado\n2 = desbloqueado',
+  `noticiastatus` INT NOT NULL DEFAULT 1 COMMENT '1 = bloqueado\n2 = desbloqueado',
   PRIMARY KEY (`idnoticia`))
 ENGINE = InnoDB;
 

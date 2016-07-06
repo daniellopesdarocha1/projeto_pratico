@@ -25,6 +25,7 @@
           <div class="container-fluid">
             <div class="navbar-header">
               <a class="navbar-brand" href="painel-inicial.php" target="_self">
+                <!--target="_self" para o objeto location não pegar-->
                 Gerenciar Imagens
               </a>
             </div>

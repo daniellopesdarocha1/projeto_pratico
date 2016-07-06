@@ -44,6 +44,15 @@
                             >
                                 Cadastrar Notícia
                             </button>
+
+                            <a 
+                                href="../api/logout"
+                                class="btn btn-default pull-right"
+                                onclick="return confirm('Tem certeza?')" 
+                            >
+                                Logout
+                            </a>
+
                         </div>
                     </div>
                 </div>
@@ -141,7 +150,7 @@
                                 <tr>
                                     <th width="90">Data</th>
                                     <th>Titulo</th>
-                                    <th width="60">Bloquear</th>
+                                    <th width="60">Status</th>
                                     <th width="150">-</th>
                                 </tr>
                             </thead>
@@ -152,33 +161,49 @@
                                     <td>{{ noticia.datanoticia }}</td>
                                     <td>{{ noticia.noticiatitulo }}</td>
                                     <td>
+
                                         <button 
                                                 type="button"
-                                                class="btn btn-default"
+                                                class="btn btn-danger"
+                                                title="Neste momento esta notícia esta bloqueada"
+                                                ng-show="noticia.noticiastatus==1"
+                                                ng-click="trocaStatus(noticia, 2)" 
                                         >
-                                            Bloquear
+                                            <i class="glyphicon glyphicon-eye-open"></i>
                                         </button>
+
+                                        <button 
+                                                type="button"
+                                                class="btn btn-success"
+                                                title="Neste momento esta notícia esta visível"
+                                                ng-show="noticia.noticiastatus!=1"
+                                                ng-click="trocaStatus(noticia, 1)"  
+                                        >
+                                            <i class="glyphicon glyphicon-eye-close"></i>
+                                        </button>
+
                                     </td>
                                     <td>
                                         <a 
                                                 href="gerenciarImagens.php?idnoticia={{noticia.idnoticia}}"
-                                                class="btn btn-danger"
+                                                class="btn btn-default"
                                                 
                                         >
-                                            I
+                                            <i class="glyphicon glyphicon-picture"></i>
                                         </a>
                                         <button 
                                                 type="button"
                                                 class="btn btn-default"
                                                 ng-click="getNoticia(noticia.idnoticia)"
                                         >
-                                            A
+                                            <i class="glyphicon glyphicon-edit"></i>
                                         </button>
                                         <button 
                                                 type="button"
                                                 class="btn btn-danger"
+                                                ng-click="excluirNoticia(noticia.idnoticia)"
                                         >
-                                            X
+                                            <i class="glyphicon glyphicon-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -186,7 +211,13 @@
                             </tbody>
                             
                         </table>
+
+                        <div class="alert alert-warning" ng-show="allNoticias.length==0">
                         
+                            <strong>Nenhuma notícia cadastrada</strong>
+
+                        </div>
+
                     </div>
                 </div>
             </div>

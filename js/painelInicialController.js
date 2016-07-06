@@ -32,6 +32,39 @@ app.controller('painelInicialController', function($scope, $http){
                 alert("Falha em obter notícia");
             });
     };
+
+    $scope.trocaStatus = function(noticia, novostatus){
+        $http.get('../api/trocastatus/'+noticia.idnoticia+"/"+novostatus)
+            .success(function(data){
+                
+                noticia.noticiastatus = novostatus;
+
+            })
+            .error(function(){
+                alert("Falha em trocar o staus");
+            });
+    };
+
+    $scope.excluirNoticia = function(idnoticia){
+
+        if (!confirm("Deseja realmente excluir?")) return false;
+
+        $http.get('../api/excluirNoticia/'+idnoticia)
+            .success(function(data){
+
+                $scope.listarNoticias();
+
+                $.gritter.add({
+                    title : "Sucesso!",
+                    text : "Notícia excluida com sucesso!",
+                    class_name : "gritter"
+                });
+
+            })
+            .error(function(){
+                alert("Falha em excluir notícia");
+            });
+    };
     
     $scope.processaFormNoticia = function(){
         if($scope.noticia.idnoticia===-1){
