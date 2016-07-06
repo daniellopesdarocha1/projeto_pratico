@@ -12,13 +12,71 @@ session_start();
 
 header("Content-Type: application/json");
 
+$app->get('/getNoticiaFrontend(/:idnoticia)', function ($idnoticia = NULL) use ($app, $db) {
+    
+        if($idnoticia==NULL){
+            $where = "";
+            $limit = " LIMIT 8 ";
+        } else {
+            $where = sprintf(' AND idnoticia = %s ', $idnoticia);   
+            $limit = "";
+        }
+    
+        
+    
+        $consulta = $db->con()->prepare("SELECT
+                                            idnoticia,
+                                            noticiatitulo,
+                                            noticiadescricao,
+                                            noticiatexto,
+                                            noticiastatus,
+                                            DATE_FORMAT(noticiadata,'%d/%m/%Y') AS datanoticia
+                                        FROM
+                                            noticia
+                                        WHERE
+                                            noticiastatus = 2
+                                        ".$where."
+                                        ORDER BY
+                                            noticiadata DESC,
+                                            noticiatitulo ASC
+                                        ".$limit);
+        $consulta->execute();
+        $noticias = $consulta->fetchAll(PDO::FETCH_ASSOC);
+    
+        $noticias_array = array();
+        $cont = 0;
+        
+        foreach($noticias as $not){
+            
+            $noticias_array[$cont]['noticia']['dados'] = $not;
+            
+            $consulta = $db->con()->prepare("SELECT
+                                                idimagem,
+                                                imagemtitulo,
+                                                imagemarquivo
+                                            FROM
+                                                imagem
+                                            WHERE
+                                                noticia_idnoticia = :IDNOTICIA
+                                            ");
+            $consulta->bindParam(':IDNOTICIA', $not['idnoticia']);
+            $consulta->execute();
+            $noticias_array[$cont]['noticia']['imagens'] = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            $cont++;
+        }
+    
+        echo json_encode(array("noticias"=>$noticias_array));
+        
+    }
+);
+
 $app->post(
     '/login',
     function () use ($app) {
         
         $data = json_decode($app->request()->getBody());
         $usuario = (isset($data->usuario)) ? $data->usuario : "";
-        $senha   = (isset($data->senha)) ? $data->senha : "";
+	    $senha   = (isset($data->senha)) ? $data->senha : "";
         
         if($usuario=="admin" && $senha=="123456"){
             
@@ -45,7 +103,7 @@ $app->post('/cadastrarNovaNoticia', 'auth', function () use ($app, $db) {
         
         $data = json_decode($app->request()->getBody());
         $noticiatitulo = (isset($data->noticiatitulo)) ? $data->noticiatitulo : "";
-        $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
+	    $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
         $noticiadata = (isset($data->noticiadata)) ? $data->noticiadata : "";
         $noticiatexto = (isset($data->noticiatexto)) ? $data->noticiatexto : "";
         
@@ -79,7 +137,7 @@ $app->post('/alterarNoticia/:idnoticia', 'auth', function ($idnoticia) use ($app
         $idnoticia = (int)$idnoticia;
     
         $noticiatitulo = (isset($data->noticiatitulo)) ? $data->noticiatitulo : "";
-        $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
+	    $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
         $noticiadata = (isset($data->noticiadata)) ? $data->noticiadata : "";
         $noticiatexto = (isset($data->noticiatexto)) ? $data->noticiatexto : "";
         
