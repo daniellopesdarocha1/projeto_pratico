@@ -152,6 +152,39 @@ $app->get('/getnoticia/:idnoticia', 'auth', function ($idnoticia) use ($app, $db
     }
 );
 
+
+// gerenciamento de imagens
+
+$app->post('/cadastrarImagem/:idnoticia', 'auth', function ($idnoticia) use ($app, $db) {
+        
+        if ( !empty( $_FILES ) ) {
+            $imagemtitulo = "";
+            $imagemarquivo = $idnoticia."_".uniqid()."_".$_FILES[ 'file' ][ 'name' ];
+            $idnoticia = (int)$idnoticia;
+            
+            $tempPath = $_FILES[ 'file' ][ 'tmp_name' ];
+            $uploadPath = '../upload/'.$imagemarquivo;            
+            move_uploaded_file( $tempPath, $uploadPath );
+            
+            $consulta = $db->con()->prepare('INSERT INTO imagem(imagemtitulo, imagemarquivo, noticia_idnoticia) VALUES (:IMAGEMTITULO, :IMAGEMARQUIVO, :IDNOTICIA)');
+            $consulta->bindParam(':IMAGEMTITULO', $imagemtitulo);
+            $consulta->bindParam(':IMAGEMARQUIVO', $imagemarquivo);
+            $consulta->bindParam(':IDNOTICIA', $idnoticia);
+
+            if($consulta->execute()){
+                echo json_encode(array("erro"=>false));
+            } else {
+                echo json_encode(array("erro"=>true));
+            }
+            
+            
+        } else {
+            echo json_encode(array("erro"=>true));
+        }
+        
+    }
+);
+
 function auth(){
     if(isset($_SESSION['logado'])){
         return true;

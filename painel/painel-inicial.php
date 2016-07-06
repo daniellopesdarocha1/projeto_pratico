@@ -140,7 +140,7 @@
                                     <th width="90">Data</th>
                                     <th>Titulo</th>
                                     <th width="60">Bloquear</th>
-                                    <th width="120">-</th>
+                                    <th width="150">-</th>
                                 </tr>
                             </thead>
                             
@@ -158,6 +158,13 @@
                                         </button>
                                     </td>
                                     <td>
+                                        <a 
+                                            href="gerenciarImagens.php?idnoticia={{noticia.idnoticia}}" 
+                                            class="btn btn-danger"
+                                            ng-click="getNoticia(noticia.idnoticia)"
+                                        >
+                                            I
+                                        </a>
                                         <button 
                                                 type="button"
                                                 class="btn btn-default"
