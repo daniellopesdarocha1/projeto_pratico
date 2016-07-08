@@ -7,232 +7,322 @@
 
 <!DOCTYPE html>
 <html ng-app="app">
-    <head>
-        <title>Painel Administrativo - Login</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-        
-        <link rel="stylesheet" href="../js/angular/loading-bar.min.css">
-        <link rel="stylesheet" href="../js/jquery/jquery.gritter.css">
-        
-        <link rel="stylesheet" href="../css/estilo.css">
-        
-    </head>
-    <body>
-        
-        <nav class="navbar navbar-default">
-          <div class="container-fluid">
-            <div class="navbar-header">
-              <a class="navbar-brand" href="#">
-                Painel de Notícias
-              </a>
-            </div>
-          </div>
-        </nav>
-        
-        <div ng-controller="painelInicialController">       
-        
-            <div class="container">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="well well-sm">
-                            <button 
-                                    type="button" 
-                                    class="btn btn-primary" 
-                                    ng-click="abreCadastroNoticia()"
-                            >
-                                Cadastrar Notícia
-                            </button>
+<head>
+    <title>Painel Administrativo - Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="../js/angular/loading-bar.min.css">
+    <link rel="stylesheet" href="../js/jquery/jquery.gritter.css">
+    
+    <link rel="stylesheet" href="../css/estilo.css">
+    
+</head>
+<body>
+    
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">
+            Painel de Notícias
+          </a>
+        </div>
+      </div>
+    </nav>
+    
+    <div ng-controller="painelInicialController">       
+    
+        <div class="container" ng-show="chatUsuarios.length>0">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h2>Atendimentos</h2>
 
-                            <a 
-                                href="../api/logout"
-                                class="btn btn-default pull-right"
-                                onclick="return confirm('Tem certeza?')" 
+                    <div class="col-xs-12">
+                        <div 
+                            class="alert alert-info"
+                            style="height:350px; overflow:scroll;overflow-x:hidden;"
+                            id="mostra_mensagens" 
+                        >
+                            <div 
+                                class="well well-sm"
+                                ng-repeat="msg in chatUsuarios[usuarioAtivo].mensagens"
                             >
-                                Logout
-                            </a>
+                                <p>De: {{msg.de}}</p>
+                                <p>{{msg.msg}}</p>
+                            </div>
 
                         </div>
                     </div>
+
+                    <hr/>
+
+                    <div class="col-xs-12">
+                        <a 
+                            href="#"
+                            ng-repeat="(ind, u) in chatUsuarios"
+                            ng-click="setUsuarioAtivo(ind)"
+                            class="btn btn-primary" 
+                        >
+                            {{u.usuario}}
+                        </a>
+                    </div>
+
+                    <div class="col-xs-10">
+                        <input 
+                            type="text"
+                            class="form-control" 
+                            placeholder="Mensagem"
+                            ng-model="novaMensagem"
+                            ng-keyup="$event.keyCode == 13 ? enviarMensagem() : null"
+                        >
+                        <!--se apertar o enter (13) então envia a mensagem-->
+                    </div>
+                    <div class="col-xs-2">
+                        <button
+                            class="btn btn-primary btn-bloxk"
+                            type="button"
+                            ng-click="enviarMensagem()"
+                            ng-disabled="novaMensagem!=''"
+                        >
+                            Enviar
+                        </button>
+                    </div>
+
                 </div>
             </div>
-            
-            <!-- form cadastro notícias -->
-            <div class="container" ng-show="showCadastro">
-                <form ng-submit="processaFormNoticia()">
-                    
-                    <div class="row mbottom">
-                        <div class="col-xs-3 text-right">
-                            Título:
-                        </div>
-                        <div class="col-xs-9">
-                            <input 
-                                   type="text" 
-                                   class="form-control" 
-                                   ng-model="noticia.noticiatitulo" 
-                                   required>
-                        </div>
-                    </div>
-                    
-                    <div class="row mbottom">
-                        <div class="col-xs-3 text-right">
-                            Descrição:
-                        </div>
-                        <div class="col-xs-9">
-                            <input 
-                                   type="text" 
-                                   class="form-control" 
-                                   ng-model="noticia.noticiadescricao" 
-                                   >
-                        </div>
-                    </div>
-                    
-                    <div class="row mbottom">
-                        <div class="col-xs-3 text-right">
-                            Data:
-                        </div>
-                        <div class="col-xs-9">
-                            <input 
-                                   class="form-control" 
-                                   ng-model="noticia.noticiadata" 
-                                   ui-mask="99/99/9999"
-                                   model-view-value="true"
-                                   >
-                        </div>
-                    </div>
-                    
-                    <div class="row mbottom">
-                        <div class="col-xs-3 text-right">
-                            Texto:
-                        </div>
-                        <div class="col-xs-9">
-                            <textarea 
-                                      class="form-control"
-                                      ng-model="noticia.noticiatexto"
-                                      rows="5"
-                                      >
-                            </textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="row mbottom">
-                        <div class="col-xs-9 col-xs-offset-3">
-                            <button 
-                                    class="btn btn-danger"
-                                    type="submit"
-                                    ng-show="noticia.idnoticia==-1"
-                            >
-                                Cadastrar
-                            </button>
-                            
-                            <button
-                                    class="btn btn-success"
-                                    type="submit"
-                                    ng-show="noticia.idnoticia!=-1"
-                                    >
-                                Alterar
-                            </button>
-                            
-                        </div>
-                    </div>
-                    
-                </form>
-            </div>
-            <!-- /form cadastro notícias -->
-            
-            <div class="container">
-                <div class="row">
-                    <div class="col-xs-12">
-                    
-                        <table class="table table-bordered table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th width="90">Data</th>
-                                    <th>Titulo</th>
-                                    <th width="60">Status</th>
-                                    <th width="150">-</th>
-                                </tr>
-                            </thead>
-                            
-                            <tbody>
-                                
-                                <tr ng-repeat="noticia in allNoticias">
-                                    <td>{{ noticia.datanoticia }}</td>
-                                    <td>{{ noticia.noticiatitulo }}</td>
-                                    <td>
+        </div>
+        <hr/>
 
-                                        <button 
-                                                type="button"
-                                                class="btn btn-danger"
-                                                title="Neste momento esta notícia esta bloqueada"
-                                                ng-show="noticia.noticiastatus==1"
-                                                ng-click="trocaStatus(noticia, 2)" 
-                                        >
-                                            <i class="glyphicon glyphicon-eye-open"></i>
-                                        </button>
 
-                                        <button 
-                                                type="button"
-                                                class="btn btn-success"
-                                                title="Neste momento esta notícia esta visível"
-                                                ng-show="noticia.noticiastatus!=1"
-                                                ng-click="trocaStatus(noticia, 1)"  
-                                        >
-                                            <i class="glyphicon glyphicon-eye-close"></i>
-                                        </button>
 
-                                    </td>
-                                    <td>
-                                        <a 
-                                                href="gerenciarImagens.php?idnoticia={{noticia.idnoticia}}"
-                                                class="btn btn-default"
-                                                
-                                        >
-                                            <i class="glyphicon glyphicon-picture"></i>
-                                        </a>
-                                        <button 
-                                                type="button"
-                                                class="btn btn-default"
-                                                ng-click="getNoticia(noticia.idnoticia)"
-                                        >
-                                            <i class="glyphicon glyphicon-edit"></i>
-                                        </button>
-                                        <button 
-                                                type="button"
-                                                class="btn btn-danger"
-                                                ng-click="excluirNoticia(noticia.idnoticia)"
-                                        >
-                                            <i class="glyphicon glyphicon-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                
-                            </tbody>
-                            
-                        </table>
 
-                        <div class="alert alert-warning" ng-show="allNoticias.length==0">
-                        
-                            <strong>Nenhuma notícia cadastrada</strong>
 
-                        </div>
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="well well-sm">
+                        <button 
+                            type="button" 
+                            class="btn btn-primary" 
+                            ng-click="abreCadastroNoticia()"
+                        >
+                            Cadastrar Notícia
+                        </button>
+
+                        <button
+                            class="btn btn-success"
+                            type="button"
+                            ng-hide="chat!=true"
+                            ng-click="chatStatus()"
+                        >
+                            Chat Online
+                        </button>
+
+                        <button
+                            class="btn btn-danger"
+                            type="button"
+                            ng-show="chat==false"
+                            ng-click="chatStatus()"
+                        >
+                            Chat Offline
+                        </button>
+
+                        <a 
+                            href="../api/logout"
+                            class="btn btn-default pull-right"
+                            onclick="return confirm('Tem certeza?')" 
+                        >
+                            Logout
+                        </a>
 
                     </div>
                 </div>
             </div>
-            
         </div>
         
-        <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <!-- form cadastro notícias -->
+        <div class="container" ng-show="showCadastro">
+            <form ng-submit="processaFormNoticia()">
+                
+                <div class="row mbottom">
+                    <div class="col-xs-3 text-right">
+                        Título:
+                    </div>
+                    <div class="col-xs-9">
+                        <input 
+                           type="text" 
+                           class="form-control" 
+                           ng-model="noticia.noticiatitulo" 
+                           required
+                        >
+                    </div>
+                </div>
+                
+                <div class="row mbottom">
+                    <div class="col-xs-3 text-right">
+                        Descrição:
+                    </div>
+                    <div class="col-xs-9">
+                        <input 
+                           type="text" 
+                           class="form-control" 
+                           ng-model="noticia.noticiadescricao" 
+                        >
+                    </div>
+                </div>
+                
+                <div class="row mbottom">
+                    <div class="col-xs-3 text-right">
+                        Data:
+                    </div>
+                    <div class="col-xs-9">
+                        <input 
+                           class="form-control" 
+                           ng-model="noticia.noticiadata" 
+                           ui-mask="99/99/9999"
+                           model-view-value="true"
+                        >
+                    </div>
+                </div>
+                
+                <div class="row mbottom">
+                    <div class="col-xs-3 text-right">
+                        Texto:
+                    </div>
+                    <div class="col-xs-9">
+                        <textarea 
+                          class="form-control"
+                          ng-model="noticia.noticiatexto"
+                          rows="5"
+                        >
+                        </textarea>
+                    </div>
+                </div>
+                
+                <div class="row mbottom">
+                    <div class="col-xs-9 col-xs-offset-3">
+                        <button 
+                            class="btn btn-danger"
+                            type="submit"
+                            ng-show="noticia.idnoticia==-1"
+                        >
+                            Cadastrar
+                        </button>
+                        
+                        <button
+                            class="btn btn-success"
+                            type="submit"
+                            ng-show="noticia.idnoticia!=-1"
+                        >
+                            Alterar
+                        </button>
+                        
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+        <!-- /form cadastro notícias -->
         
-        <script src="../js/jquery/jquery.gritter.min.js"></script>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th width="90">Data</th>
+                                <th>Titulo</th>
+                                <th width="60">Status</th>
+                                <th width="150">-</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            
+                            <tr ng-repeat="noticia in allNoticias">
+                                <td>{{ noticia.datanoticia }}</td>
+                                <td>{{ noticia.noticiatitulo }}</td>
+                                <td>
+
+                                    <button 
+                                        type="button"
+                                        class="btn btn-danger"
+                                        title="Neste momento esta notícia esta bloqueada"
+                                        ng-show="noticia.noticiastatus==1"
+                                        ng-click="trocaStatus(noticia, 2)" 
+                                    >
+                                        <i class="glyphicon glyphicon-eye-open"></i>
+                                    </button>
+
+                                    <button 
+                                        type="button"
+                                        class="btn btn-success"
+                                        title="Neste momento esta notícia esta visível"
+                                        ng-show="noticia.noticiastatus!=1"
+                                        ng-click="trocaStatus(noticia, 1)"  
+                                    >
+                                        <i class="glyphicon glyphicon-eye-close"></i>
+                                    </button>
+
+                                </td>
+                                <td>
+                                    <a 
+                                        href="gerenciarImagens.php?idnoticia={{noticia.idnoticia}}"
+                                        class="btn btn-default"    
+                                    >
+                                        <i class="glyphicon glyphicon-picture"></i>
+                                    </a>
+                                    <button 
+                                        type="button"
+                                        class="btn btn-default"
+                                        ng-click="getNoticia(noticia.idnoticia)"
+                                    >
+                                        <i class="glyphicon glyphicon-edit"></i>
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        class="btn btn-danger"
+                                        ng-click="excluirNoticia(noticia.idnoticia)"
+                                    >
+                                        <i class="glyphicon glyphicon-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                        
+                    </table>
+
+                    <div class="alert alert-warning" ng-show="allNoticias.length==0">
+                    
+                        <strong>Nenhuma notícia cadastrada</strong>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
         
-        <script src="../js/angular/angular.min.js"></script>
-        <script src="../js/angular/ui-utils.min.js"></script>
-        
-        <script src="../js/angular/loading-bar.min.js"></script>
-        
-        <script src="../js/painelInicialController.js"></script>
-    </body>
+    </div>
+    
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    
+    <script src="../js/jquery/jquery.gritter.min.js"></script>
+    
+    <script src="../js/angular/angular.min.js"></script>
+
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+
+    <script src="../js/angular/ng-socket-io.js"></script>
+
+    <script src="../js/angular/ui-utils.min.js"></script>
+    
+    <script src="../js/angular/loading-bar.min.js"></script>
+    
+    <script src="../js/painelInicialController.js"></script>
+</body>
 </html>
