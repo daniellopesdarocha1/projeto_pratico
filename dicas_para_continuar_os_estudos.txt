@@ -1,0 +1,23 @@
+Dicas para estudar
+
+https://angularjs.org/
+
+https://angular.io/
+
+http://mobileangularui.com/demo/#/toggle
+
+http://www.ractivejs.org/
+
+https://www.sencha.com/
+
+http://backbonejs.org/
+
+emberjs.com
+
+http://yeoman.io/
+
+http://ionicframework.com/
+
+https://www.polymer-project.org/1.0/
+
+https://bower.io/

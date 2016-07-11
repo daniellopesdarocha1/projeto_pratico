@@ -78,7 +78,7 @@ $app->post(
         
         $data = json_decode($app->request()->getBody());
         $usuario = (isset($data->usuario)) ? $data->usuario : "";
-        $senha   = (isset($data->senha)) ? $data->senha : "";
+	    $senha   = (isset($data->senha)) ? $data->senha : "";
         
         if($usuario=="admin" && $senha=="123456"){
             
@@ -105,7 +105,7 @@ $app->post('/cadastrarNovaNoticia', 'auth', function () use ($app, $db) {
         
         $data = json_decode($app->request()->getBody());
         $noticiatitulo = (isset($data->noticiatitulo)) ? $data->noticiatitulo : "";
-        $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
+	    $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
         $noticiadata = (isset($data->noticiadata)) ? $data->noticiadata : "";
         $noticiatexto = (isset($data->noticiatexto)) ? $data->noticiatexto : "";
         
@@ -139,7 +139,7 @@ $app->post('/alterarNoticia/:idnoticia', 'auth', function ($idnoticia) use ($app
         $idnoticia = (int)$idnoticia;
     
         $noticiatitulo = (isset($data->noticiatitulo)) ? $data->noticiatitulo : "";
-        $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
+	    $noticiadescricao = (isset($data->noticiadescricao)) ? $data->noticiadescricao : "";
         $noticiadata = (isset($data->noticiadata)) ? $data->noticiadata : "";
         $noticiatexto = (isset($data->noticiatexto)) ? $data->noticiatexto : "";
         

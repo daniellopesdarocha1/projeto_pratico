@@ -1,89 +1,100 @@
 var app = angular.module('app', ['ui.mask','angular-loading-bar', 'socket-io']);
 
 app.controller('painelInicialController', function($scope, $http, socket){
-
-    /*inicio chat*/
-
+    
+    /* chat */
+    
     $scope.senha = '123456';
-
-    $scope.chat = false; //indica que o chat está online ou offline.
-
+    
+    // indica que o chat está online ou offline
+    $scope.chat = false;
+    
     $scope.chatUsuarios = [];
-
+    
     $scope.novaMensagem = '';
-
-    $scope.usuarioAtivo = 0; // para armazenar o indice do usuario que está ativo no momento.
-
+    
+    $scope.usuarioAtivo = 0;
+    
     socket.emit('adminlogin', $scope.senha);
-
+    
     $scope.chatStatus = function(){
         socket.emit('setChatStatus', $scope.senha);
     };
-
+    
     socket.on('chatstatus', function(data){
         $scope.chat = data.online;
     });
-
+    
     socket.on('usuarioentrou', function(email){
-        $scope.chatUsuarios.push({ usuario : email, mensagens : [] });
-
+        $scope.chatUsuarios.push({ usuario : email, mensagens : []});
+        
         if($scope.chatUsuarios.length==1){
             $scope.usuarioAtivo = 0;
         }
     });
-
-    socket.on('novamensagemparaadmin', function(mensagem){
-        var ind = $scope.buscaUsuario(mensagem.de);
-        $scope.chatUsuarios[ind].mensagens.push(
-            { de : mensagem.de, msg : mensagem.msg }
-        );
+    
+    socket.on('usuariosaiu', function(usuario){
+        var ind = $scope.buscaUsuario(usuario);
+        
+        console.log('Usuário saiu');
+        console.log($scope.chatUsuarios[ind]);
+        
+        $.gritter.add({
+                        title : "Usuário saiu",
+                        text : $scope.chatUsuarios[ind].usuario+" saiu",
+                        class_name : "gritter"
+                    });
+        
+        $scope.chatUsuarios.splice(ind, 1);
+        $scope.usuarioAtivo = 0;
     });
-
+    
+    socket.on('novamensagemparaadmin', function(mensagem){
+        var ind = $scope.buscaUsuario(mensagem.de); 
+        $scope.chatUsuarios[ind].mensagens.push(
+                            { de:mensagem.de, msg:mensagem.msg }
+                            );
+    });
+    
     $scope.buscaUsuario = function(usuario){
         var status = false;
         var cont = 0;
-
         while(cont < $scope.chatUsuarios.length){
             if($scope.chatUsuarios[cont].usuario==usuario){
-                return cont;
+                return cont;   
             }
             cont++;
         }
-
+        
         return false;
     }
-
+    
     $scope.enviarMensagem = function(){
-
+        
         $scope.chatUsuarios[$scope.usuarioAtivo].mensagens.push(
-            { de : 'Admin', msg : $scope.novaMensagem }
+            { de:'Admin', msg : $scope.novaMensagem }
         );
-
+        
         socket.emit('enviarmensagemparausuario', 
-            { 
-                para : $scope.chatUsuarios[$scope.usuarioAtivo].usuario,
-                msg : $scope.novaMensagem 
-             }
-        );
-
+                    { para :                      $scope.chatUsuarios[$scope.usuarioAtivo].usuario, 
+                     msg : $scope.novaMensagem });
+        
         $scope.novaMensagem = '';
         $scope.scrollDown();
     }
-
+    
     $scope.setaUsuarioAtivo = function(ind){
-        $scope.usuarioAtivo = ind;
+        $scope.usuarioAtivo = ind;   
     }
-
+    
     $scope.scrollDown = function(){
         setTimeout(function(){
             $("#mostra_mensagens").scrollTop(1E10);
         }, 800);
     }
-
-    /* fim chat*/
-
-
-
+    
+    /* fim chat */
+    
     $scope.showCadastro = false;
     $scope.noticia = objNoticia();
     $scope.allNoticias = {};
@@ -115,34 +126,31 @@ app.controller('painelInicialController', function($scope, $http, socket){
                 alert("Falha em obter notícia");
             });
     };
-
+    
     $scope.trocaStatus = function(noticia, novostatus){
         $http.get('../api/trocastatus/'+noticia.idnoticia+"/"+novostatus)
             .success(function(data){
-                
-                noticia.noticiastatus = novostatus;
-
+                noticia.noticiastatus = novostatus;        
             })
             .error(function(){
-                alert("Falha em trocar o staus");
+                alert("Falha trocar o status");
             });
     };
-
+    
     $scope.excluirNoticia = function(idnoticia){
-
-        if (!confirm("Deseja realmente excluir?")) return false;
-
+        
+        if(!confirm("Deseja realmente excluir?")) return false;
+        
         $http.get('../api/excluirNoticia/'+idnoticia)
             .success(function(data){
-
-                $scope.listarNoticias();
-
+                $scope.listarNoticias(); 
+                
                 $.gritter.add({
-                    title : "Sucesso!",
-                    text : "Notícia excluida com sucesso!",
-                    class_name : "gritter"
-                });
-
+                        title : "Sucesso!",
+                        text : "Notícia excluída com sucesso!",
+                        class_name : "gritter"
+                    });
+            
             })
             .error(function(){
                 alert("Falha em excluir notícia");

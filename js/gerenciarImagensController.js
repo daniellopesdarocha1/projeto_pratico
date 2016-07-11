@@ -72,13 +72,14 @@ app.controller('gerenciarImagensController', function($scope, $http, $location, 
         console.info("Erro ao adicionar elemento", fileItem);
     };
     
-    uploader.filters.push({ //para bloquear cadastro de outros tipos de arquivos
+    uploader.filters.push({
             name: 'imageFilter',
             fn: function(item /*{File|FileLikeObject}*/, options) {
                 var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
                 return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
             }
         });
+    
     
     uploader.onWhenAddingFileFailed = function(fileItem){
         alert("Somente imagens são permitidas");
